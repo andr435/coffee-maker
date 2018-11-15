@@ -1,0 +1,244 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "coffee maker",
+            "intents": [
+                {
+                    "name": "AMAZON.FallbackIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.NavigateHomeIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.RepeatIntent",
+                    "samples": []
+                },
+                {
+                    "name": "make_coffee",
+                    "slots": [
+                        {
+                            "name": "coffee",
+                            "type": "coffee_type"
+                        }
+                    ],
+                    "samples": [
+                        "can I get a cup of {coffee}",
+                        "can I get {coffee}",
+                        "ask for a {coffee}",
+                        "make me a cup of {coffee}",
+                        "I'm thirsty",
+                        "{coffee}",
+                        "for {coffee}",
+                        "I want {coffee}"
+                    ]
+                },
+                {
+                    "name": "setup",
+                    "slots": [
+                        {
+                            "name": "user_name",
+                            "type": "AMAZON.US_FIRST_NAME",
+                            "samples": [
+                                "call me {user_name}",
+                                "my name is {user_name}",
+                                "my name {user_name}",
+                                "{user_name}"
+                            ]
+                        },
+                        {
+                            "name": "maker_name",
+                            "type": "AMAZON.US_FIRST_NAME",
+                            "samples": [
+                                "you can call him {maker_name}",
+                                "you can call her {maker_name}",
+                                "a name of coffe maker is {maker_name}",
+                                "a name of coffe maker {maker_name}",
+                                "the name is {maker_name}",
+                                "her name is {maker_name}",
+                                "his name is {maker_name}",
+                                "her name {maker_name}",
+                                "his name {maker_name}",
+                                "{maker_name}"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "this is not my name",
+                        "go to setting",
+                        "update coffee maker name",
+                        "update my name",
+                        "update ",
+                        "set up"
+                    ]
+                }
+            ],
+            "types": [
+                {
+                    "name": "coffee_type",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "botz"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "vienna coffee"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "turkish coffee"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "instant coffee"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "indian filter coffee"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "ice coffee"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "espresso"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "capuccino"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "coffee mocha"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "coffee milk"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "coffee latte"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "coffee crema"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "breve"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "bicerin"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "americano"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "affogato"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "coffe"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "setup",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "user_name",
+                            "type": "AMAZON.US_FIRST_NAME",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.579489270610.838578771466"
+                            }
+                        },
+                        {
+                            "name": "maker_name",
+                            "type": "AMAZON.US_FIRST_NAME",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.579489270610.54480480487"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.579489270610.838578771466",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "What is your name?"
+                    },
+                    {
+                        "type": "PlainText",
+                        "value": "What is your first name?"
+                    }
+                ]
+            },
+            {
+                "id": "Elicit.Slot.579489270610.54480480487",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Who will serve you a coffee?"
+                    },
+                    {
+                        "type": "PlainText",
+                        "value": "What a name of coffee maker?"
+                    },
+                    {
+                        "type": "PlainText",
+                        "value": "Who will make you a coffee. Give me the name."
+                    }
+                ]
+            }
+        ]
+    }
+}
