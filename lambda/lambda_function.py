@@ -33,9 +33,10 @@ def persist_user_attributes(handler_input):
 @sb.request_handler(can_handle_func=is_request_type("LaunchRequest"))
 def launch_request_handler(handler_input):
     attr = handler_input.attributes_manager.persistent_attributes
-    session_attr = {}
-    session_attr['state'] = 'launch'
-    session_attr['prev_state'] = ''
+    session_attr = {
+        'state': 'launch',
+        'prev_state': ''
+    }
 
     if not attr:
         speech_text = f"""
@@ -67,10 +68,12 @@ def launch_request_handler(handler_input):
         return handler_input.response_builder.add_directive(DelegateDirective()).response
 
     filled_slots = handler_input.request_envelope.request.intent.slots
+    slots = get_slot_values(filled_slots)
 
-    settings = {}
-    settings['user'] = filled_slots.user_name.value
-    settings['maker'] = filled_slots.maker_name.value
+    settings = {
+        'user': slots['user_name'],
+        'maker': slots['maker_name']
+    }
 
     handler_input.attributes_manager.persistent_attributes = settings
     handler_input.attributes_manager.save_persistent_attributes()
@@ -80,12 +83,35 @@ def launch_request_handler(handler_input):
     return handler_input.response_builder.response
 
 
-@sb.request_handler(can_handle_func=is_intent_name("CoffeeIntent"))
+@sb.request_handler(can_handle_func=is_intent_name("MakeCoffeeIntent"))
 def launch_request_handler(handler_input):
+    session_attr = handler_input.attributes_manager.session_attributes
+    session_attr['prev_state'] = session_attr['state']
+    session_attr['state'] = 'make_coffee'
+    handler_input.attributes_manager.session_attributes = session_attr
+
     attr = handler_input.attributes_manager.persistent_attributes
-    speech_text = 'test'
-    reprompt = 'test'
+    filled_slots = handler_input.request_envelope.request.intent.slots
+    slots = get_slot_values(filled_slots)
+
+    maker = attr['maker']
+    user = attr['user']
+    coffee = slots['coffee']
+
+    text_a = random.choice(config.replay)
+    text_b = random.choice(config.replay)
+    speech_text = text_a.format(user=user, maker=maker, coffee=coffee)
+    reprompt = text_b.format(user=user, maker=maker, coffee=coffee)
+
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
     return handler_input.response_builder.response
+
+
+def get_slot_values(filled_slots):
+    slots = {}
+    for key, val in filled_slots.items():
+        slots[key] = val.value
+    return slots
+
 
 handler = sb.lambda_handler()
