@@ -1,13 +1,11 @@
 import os
 import random
-import logging
 
 from ask_sdk.standard import StandardSkillBuilder
 from ask_sdk_core.utils import is_request_type, is_intent_name
 import ask_sdk_dynamodb
 from ask_sdk_model.dialog import (ElicitSlotDirective, DelegateDirective)
 from ask_sdk_model import (Response, IntentRequest, DialogState, SlotConfirmationStatus, Slot)
-from ask_sdk_model.slu.entityresolution import StatusCode
 from ask_sdk_model.ui import SimpleCard
 
 import config
@@ -105,6 +103,9 @@ def launch_request_handler(handler_input):
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
     return handler_input.response_builder.response
+
+
+@sb.request_handler(can_handle_func=)
 
 
 def get_slot_values(filled_slots):
