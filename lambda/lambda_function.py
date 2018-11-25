@@ -75,7 +75,7 @@ def setup_intent_handler(handler_input):
 
     handler_input.attributes_manager.persistent_attributes = settings
     handler_input.attributes_manager.save_persistent_attributes()
-    speech_text = "What kind of coffee would?"
+    speech_text = "What kind of coffee would you like?"
     reprompt = 'What coffee do you want?'
 
     session_attr['speech'] = speech_text
@@ -219,7 +219,7 @@ def repeat_intent_handler(handler_input):
 
     handler_input.attributes_manager.session_attributes = session_attr
 
-    handler_input.response_builder.speak(session_attr['speech']).ask(session_attr['repromt']).set_card(SimpleCard(skillName, session_attr['card']))
+    handler_input.response_builder.speak(session_attr['speech']).ask(session_attr['reprompt']).set_card(SimpleCard(skillName, session_attr['card']))
     return handler_input.response_builder.response
 
 
