@@ -59,7 +59,7 @@ def launch_request_handler(handler_input):
 @sb.request_handler(can_handle_func=is_intent_name("SetupIntent"))
 def setup_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state']
+    session_attr['prev_state'] = session_attr['state'] or ''
     session_attr['state'] = 'setup'
 
     if handler_input.request_envelope.request.dialog_state != DialogState.COMPLETED:
@@ -92,7 +92,7 @@ def setup_intent_handler(handler_input):
 @sb.request_handler(can_handle_func=lambda input: is_intent_name("MakeCoffeeIntent")(input) or is_intent_name("AMAZON.NavigateHomeIntent")(input))
 def make_coffee_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state']
+    session_attr['prev_state'] = session_attr['state'] or ''
     session_attr['state'] = 'make_coffee'
 
     required = ('user', 'maker')
@@ -139,7 +139,7 @@ def make_coffee_intent_handler(handler_input):
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.FallbackIntent"))
 def fallback_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state']
+    session_attr['prev_state'] = session_attr['state'] or ''
     session_attr['state'] = 'fallback'
 
     if 'user' in session_attr:
@@ -191,7 +191,7 @@ def stop_or_cancel_intent_handler(handler_input):
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.HelpIntent"))
 def help_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state']
+    session_attr['prev_state'] = session_attr['state'] or ''
     session_attr['state'] = 'help'
 
     speech_text = """
@@ -214,7 +214,7 @@ def help_intent_handler(handler_input):
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.RepeatIntent"))
 def repeat_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state']
+    session_attr['prev_state'] = session_attr['state'] or ''
     session_attr['state'] = 'repeat'
 
     handler_input.attributes_manager.session_attributes = session_attr
