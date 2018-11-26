@@ -105,6 +105,9 @@ def make_coffee_intent_handler(handler_input):
                         """
             reprompt = 'Please tell me, what is your name?'
             card_text = f"Welcome to {skillName}, what is your name?"
+
+            save_last_response(session_attr, speech_text, reprompt, speech_text)
+            handler_input.attributes_manager.session_attributes = session_attr
             handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
             return handler_input.response_builder.response
 
@@ -133,6 +136,7 @@ def make_coffee_intent_handler(handler_input):
 def name_intent_handler(handler_input):
     session_attr = handler_input.attributes_manager.session_attributes
     session_attr.setdefault('state', '')
+
     filled_slots = handler_input.request_envelope.request.intent.slots
     slots = get_slot_values(filled_slots)
 
@@ -147,6 +151,7 @@ def name_intent_handler(handler_input):
             speech_text = "What kind of coffee would you like?"
             reprompt = "What coffee do you want?"
             card_text = speech_text
+            session_attr['state'] = 'make_coffee'
 
     elif session_attr['state'] == 'maker_name':
         session_attr['maker'] = slots['name']
@@ -159,11 +164,23 @@ def name_intent_handler(handler_input):
             speech_text = "What kind of coffee would you like?"
             reprompt = "What coffee do you want?"
             card_text = speech_text
+            session_attr['state'] = 'make_coffee'
 
     else:
         speech_text = "What kind of coffee would you like?"
         reprompt = "What coffee do you want?"
         card_text = speech_text
+        session_attr['state'] = 'make_coffee'
+
+    required = ('user', 'maker')
+    if all(k in session_attr for k in required):
+        settings = {
+            'user': session_attr['user'],
+            'maker': session_attr['maker']
+        }
+
+        handler_input.attributes_manager.persistent_attributes = settings
+        handler_input.attributes_manager.save_persistent_attributes()
 
     save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr

@@ -28,7 +28,7 @@
                     "samples": []
                 },
                 {
-                    "name": "make_coffee",
+                    "name": "MakeCoffeeIntent",
                     "slots": [
                         {
                             "name": "coffee",
@@ -36,6 +36,7 @@
                         }
                     ],
                     "samples": [
+                        "just {coffee}",
                         "can I get a cup of {coffee}",
                         "can I get {coffee}",
                         "ask for a {coffee}",
@@ -47,7 +48,7 @@
                     ]
                 },
                 {
-                    "name": "setup",
+                    "name": "SetupIntent",
                     "slots": [
                         {
                             "name": "user_name",
@@ -77,12 +78,29 @@
                         }
                     ],
                     "samples": [
+                        "maker name is {maker_name}",
+                        "maker name {maker_name}",
+                        "my name {user_name}",
+                        "You can call me {user_name}",
+                        "My name is {user_name}",
                         "this is not my name",
-                        "go to setting",
+                        "go to settings",
                         "update coffee maker name",
                         "update my name",
                         "update ",
                         "set up"
+                    ]
+                },
+                {
+                    "name": "NameIntent",
+                    "slots": [
+                        {
+                            "name": "name",
+                            "type": "AMAZON.US_FIRST_NAME"
+                        }
+                    ],
+                    "samples": [
+                        "{name}"
                     ]
                 }
             ],
@@ -172,7 +190,7 @@
                         },
                         {
                             "name": {
-                                "value": "coffe"
+                                "value": "coffee"
                             }
                         }
                     ]
@@ -182,7 +200,7 @@
         "dialog": {
             "intents": [
                 {
-                    "name": "setup",
+                    "name": "SetupIntent",
                     "confirmationRequired": false,
                     "prompts": {},
                     "slots": [
@@ -203,6 +221,20 @@
                             "prompts": {
                                 "elicitation": "Elicit.Slot.579489270610.54480480487"
                             }
+                        }
+                    ]
+                },
+                {
+                    "name": "MakeCoffeeIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "coffee",
+                            "type": "coffee_type",
+                            "confirmationRequired": false,
+                            "elicitationRequired": false,
+                            "prompts": {}
                         }
                     ]
                 }
