@@ -20,15 +20,17 @@ sb = StandardSkillBuilder(table_name=dbTable, auto_create_table=False, partition
 # Launcher Request
 ###########################
 
+
 @sb.request_handler(can_handle_func=is_request_type("LaunchRequest"))
 def launch_request_handler(handler_input):
     attr = handler_input.attributes_manager.persistent_attributes
     session_attr = {
         'state': 'launch',
-        'prev_state': ''
+        'prev_state': '',
     }
 
     if not attr:
+        session_attr['state'] = 'user_name'
         speech_text = f"""
             Welcome to {skillName}, 
             a skill that will help you to get a cup of coffee. 
@@ -94,6 +96,7 @@ def make_coffee_intent_handler(handler_input):
     else:
         attr = handler_input.attributes_manager.persistent_attributes
         if not attr:
+            session_attr['state'] = 'user_name'
             speech_text = f"""
                         Welcome to {skillName}, 
                         a skill that will help you to get a cup of coffee. 
@@ -126,6 +129,49 @@ def make_coffee_intent_handler(handler_input):
     return handler_input.response_builder.response
 
 
+@sb.request_handler(can_handle_func=is_intent_name('NameIntent'))
+def name_intent_handler(handler_input):
+    session_attr = handler_input.attributes_manager.session_attributes
+    session_attr.setdefault('state', '')
+    filled_slots = handler_input.request_envelope.request.intent.slots
+    slots = get_slot_values(filled_slots)
+
+    if session_attr['state'] == 'user_name':
+        session_attr['user'] = slots['name']
+        if 'maker' not in session_attr:
+            speech_text = "What a name of coffee maker?"
+            reprompt = "Who will serve you a coffee?"
+            card_text = speech_text
+            session_attr['state'] = 'maker_name'
+        else:
+            speech_text = "What kind of coffee would you like?"
+            reprompt = "What coffee do you want?"
+            card_text = speech_text
+
+    elif session_attr['state'] == 'maker_name':
+        session_attr['maker'] = slots['name']
+        if 'user' not in session_attr:
+            speech_text = "What is your name?"
+            reprompt = "What is your first name?"
+            card_text = speech_text
+            session_attr['state'] = 'user_name'
+        else:
+            speech_text = "What kind of coffee would you like?"
+            reprompt = "What coffee do you want?"
+            card_text = speech_text
+
+    else:
+        speech_text = "What kind of coffee would you like?"
+        reprompt = "What coffee do you want?"
+        card_text = speech_text
+
+    save_last_response(session_attr, speech_text, reprompt, card_text)
+    handler_input.attributes_manager.session_attributes = session_attr
+
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
+    return handler_input.response_builder.response
+
+
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.FallbackIntent"))
 def fallback_intent_handler(handler_input):
     session_attr = get_session_attr(handler_input, 'fallback')
@@ -140,6 +186,7 @@ def fallback_intent_handler(handler_input):
     else:
         attr = handler_input.attributes_manager.persistent_attributes
         if not attr:
+            session_attr['state'] = 'user_name'
             speech_text = f"""
                         Sorry, I can not help you with that.
                         I am the {skillName}, 
