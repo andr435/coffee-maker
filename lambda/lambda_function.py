@@ -47,9 +47,7 @@ def launch_request_handler(handler_input):
             session_attr['user'] = attr['user']
             session_attr['maker'] = attr['maker']
 
-    session_attr['speech'] = speech_text
-    session_attr['reprompt'] = reprompt
-    session_attr['card'] = card_text
+    save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
@@ -58,9 +56,7 @@ def launch_request_handler(handler_input):
 
 @sb.request_handler(can_handle_func=is_intent_name("SetupIntent"))
 def setup_intent_handler(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state'] or ''
-    session_attr['state'] = 'setup'
+    session_attr = get_session_attr(handler_input, 'setup')
 
     if handler_input.request_envelope.request.dialog_state != DialogState.COMPLETED:
         return handler_input.response_builder.add_directive(DelegateDirective()).response
@@ -78,11 +74,9 @@ def setup_intent_handler(handler_input):
     speech_text = "What kind of coffee would you like?"
     reprompt = 'What coffee do you want?'
 
-    session_attr['speech'] = speech_text
-    session_attr['reprompt'] = reprompt
-    session_attr['card'] = speech_text
     session_attr['user'] = slots['user_name']
     session_attr['maker'] = slots['maker_name']
+    save_last_response(session_attr, speech_text, reprompt, speech_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
@@ -91,9 +85,7 @@ def setup_intent_handler(handler_input):
 
 @sb.request_handler(can_handle_func=lambda input: is_intent_name("MakeCoffeeIntent")(input) or is_intent_name("AMAZON.NavigateHomeIntent")(input))
 def make_coffee_intent_handler(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state'] or ''
-    session_attr['state'] = 'make_coffee'
+    session_attr = get_session_attr(handler_input, 'make_coffee')
 
     required = ('user', 'maker')
     if all(k in session_attr for k in required):
@@ -127,9 +119,7 @@ def make_coffee_intent_handler(handler_input):
     speech_text = text_a.format(user=user, maker=maker, coffee=coffee)
     reprompt = text_b.format(user=user, maker=maker, coffee=coffee)
 
-    session_attr['speech'] = speech_text
-    session_attr['reprompt'] = reprompt
-    session_attr['card'] = speech_text
+    save_last_response(session_attr, speech_text, reprompt, speech_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
@@ -138,9 +128,7 @@ def make_coffee_intent_handler(handler_input):
 
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.FallbackIntent"))
 def fallback_intent_handler(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state'] or ''
-    session_attr['state'] = 'fallback'
+    session_attr = get_session_attr(handler_input, 'fallback')
 
     if 'user' in session_attr:
         speech_text = f"""
@@ -173,9 +161,7 @@ def fallback_intent_handler(handler_input):
             session_attr['user'] = user
             session_attr['maker'] = maker
 
-    session_attr['speech'] = speech_text
-    session_attr['reprompt'] = reprompt
-    session_attr['card'] = card_text
+    save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
@@ -190,9 +176,7 @@ def stop_or_cancel_intent_handler(handler_input):
 
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.HelpIntent"))
 def help_intent_handler(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state'] or ''
-    session_attr['state'] = 'help'
+    session_attr = get_session_attr(handler_input, 'help')
 
     speech_text = """
         This is a funny skill that will help you to get a cup of coffee.
@@ -202,9 +186,7 @@ def help_intent_handler(handler_input):
     reprompt = 'Try to say: I want coffee'
     card_text = reprompt
 
-    session_attr['speech'] = speech_text
-    session_attr['reprompt'] = reprompt
-    session_attr['card'] = card_text
+    save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
     handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
@@ -213,12 +195,8 @@ def help_intent_handler(handler_input):
 
 @sb.request_handler(can_handle_func=is_intent_name("AMAZON.RepeatIntent"))
 def repeat_intent_handler(handler_input):
-    session_attr = handler_input.attributes_manager.session_attributes
-    session_attr['prev_state'] = session_attr['state'] or ''
-    session_attr['state'] = 'repeat'
-
+    session_attr = get_session_attr(handler_input, 'repeat')
     handler_input.attributes_manager.session_attributes = session_attr
-
     handler_input.response_builder.speak(session_attr['speech']).ask(session_attr['reprompt']).set_card(SimpleCard(skillName, session_attr['card']))
     return handler_input.response_builder.response
 
@@ -242,6 +220,20 @@ def get_slot_values(filled_slots):
     for key, val in filled_slots.items():
         slots[key] = val.value
     return slots
+
+
+def get_session_attr(handler_input, state=''):
+    session_attr = handler_input.attributes_manager.session_attributes
+    session_attr.setdefault('state', '')
+    session_attr['prev_state'] = session_attr['state']
+    session_attr['state'] = state
+    return session_attr
+
+
+def save_last_response(session_attr, speech='', reprompt='', card=''):
+    session_attr['speech'] = speech
+    session_attr['reprompt'] = reprompt
+    session_attr['card'] = card
 
 
 handler = sb.lambda_handler()
