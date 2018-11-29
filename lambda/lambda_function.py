@@ -75,13 +75,14 @@ def setup_intent_handler(handler_input):
     handler_input.attributes_manager.save_persistent_attributes()
     speech_text = "What kind of coffee would you like?"
     reprompt = 'What coffee do you want?'
+    card_text = speech_text
 
     session_attr['user'] = slots['user_name']
     session_attr['maker'] = slots['maker_name']
-    save_last_response(session_attr, speech_text, reprompt, speech_text)
+    save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
-    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
     return handler_input.response_builder.response
 
 
@@ -106,7 +107,7 @@ def make_coffee_intent_handler(handler_input):
             reprompt = 'Please tell me, what is your name?'
             card_text = f"Welcome to {skillName}, what is your name?"
 
-            save_last_response(session_attr, speech_text, reprompt, speech_text)
+            save_last_response(session_attr, speech_text, reprompt, card_text)
             handler_input.attributes_manager.session_attributes = session_attr
             handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
             return handler_input.response_builder.response
@@ -122,13 +123,14 @@ def make_coffee_intent_handler(handler_input):
 
     text_a = random.choice(config.replay)
     text_b = random.choice(config.replay)
-    speech_text = text_a.format(user=user, maker=maker, coffee=coffee)
-    reprompt = text_b.format(user=user, maker=maker, coffee=coffee)
+    speech_text = text_a['text'].format(user=user, maker=maker, coffee=coffee)
+    reprompt = text_b['text'].format(user=user, maker=maker, coffee=coffee)
+    card_text = text_a['card'].format(user=user, maker=maker, coffee=coffee)
 
-    save_last_response(session_attr, speech_text, reprompt, speech_text)
+    save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
-    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
     return handler_input.response_builder.response
 
 
@@ -185,7 +187,7 @@ def name_intent_handler(handler_input):
     save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
 
-    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, speech_text))
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
     return handler_input.response_builder.response
 
 
@@ -220,10 +222,9 @@ def fallback_intent_handler(handler_input):
                         """
             reprompt = 'What coffee do you want?'
             card_text = reprompt
-            maker = attr['maker']
-            user = attr['user']
-            session_attr['user'] = user
-            session_attr['maker'] = maker
+
+            session_attr['user'] = attr['user']
+            session_attr['maker'] = attr['maker']
 
     save_last_response(session_attr, speech_text, reprompt, card_text)
     handler_input.attributes_manager.session_attributes = session_attr
@@ -282,7 +283,11 @@ def all_exception_handler(handler_input, exception):
 def get_slot_values(filled_slots):
     slots = {}
     for key, val in filled_slots.items():
-        slots[key] = val.value
+        tmp = val.resolutions.to_dict()
+        if tmp['resolutions_per_authority'][0]['status']['code'] != 'ER_SUCCESS_MATCH':
+            slots[key] = val.value
+        else:
+            slots[key] = tmp['resolutions_per_authority'][0]['values'][0]['value']['name']
     return slots
 
 

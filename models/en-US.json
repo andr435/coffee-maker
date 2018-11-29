@@ -110,32 +110,66 @@
                     "values": [
                         {
                             "name": {
-                                "value": "botz"
+                                "value": "nes kafe",
+                                "synonyms": [
+                                    "nes coffee"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "vienna coffee"
+                                "value": "botz",
+                                "synonyms": [
+                                    "bots",
+                                    "botc",
+                                    "boz"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "turkish coffee"
+                                "value": "coffee with milk"
                             }
                         },
                         {
                             "name": {
-                                "value": "instant coffee"
+                                "value": "vienna coffee",
+                                "synonyms": [
+                                    "vienna"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "indian filter coffee"
+                                "value": "turkish coffee",
+                                "synonyms": [
+                                    "turkish"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "ice coffee"
+                                "value": "instant coffee",
+                                "synonyms": [
+                                    "instant"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "indian filter coffee",
+                                "synonyms": [
+                                    "filter",
+                                    "filter coffee"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "ice coffee",
+                                "synonyms": [
+                                    "ice"
+                                ]
                             }
                         },
                         {
@@ -145,12 +179,18 @@
                         },
                         {
                             "name": {
-                                "value": "capuccino"
+                                "value": "cappuccino",
+                                "synonyms": [
+                                    "cappuccino"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "coffee mocha"
+                                "value": "coffee mocha",
+                                "synonyms": [
+                                    "mocha"
+                                ]
                             }
                         },
                         {
@@ -160,12 +200,18 @@
                         },
                         {
                             "name": {
-                                "value": "coffee latte"
+                                "value": "coffee latte",
+                                "synonyms": [
+                                    "latte"
+                                ]
                             }
                         },
                         {
                             "name": {
-                                "value": "coffee crema"
+                                "value": "coffee crema",
+                                "synonyms": [
+                                    "crema"
+                                ]
                             }
                         },
                         {
