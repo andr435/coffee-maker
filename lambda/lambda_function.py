@@ -118,7 +118,7 @@ def make_coffee_intent_handler(handler_input):
         session_attr['maker'] = maker
 
     filled_slots = handler_input.request_envelope.request.intent.slots
-    slots = get_slot_values(filled_slots)
+    slots = get_slot_values(filled_slots, True)
     coffee = slots['coffee']
 
     text_a = random.choice(config.replay)
@@ -280,14 +280,20 @@ def all_exception_handler(handler_input, exception):
     return handler_input.response_builder.response
 
 
-def get_slot_values(filled_slots):
+def get_slot_values(filled_slots, resolution=False):
     slots = {}
-    for key, val in filled_slots.items():
-        tmp = val.resolutions.to_dict()
-        if tmp['resolutions_per_authority'][0]['status']['code'] != 'ER_SUCCESS_MATCH':
+    if resolution:
+        for key, val in filled_slots.items():
+            tmp = val.resolutions.to_dict()
+            if tmp['resolutions_per_authority'][0]['status']['code'] != 'ER_SUCCESS_MATCH':
+                slots[key] = val.value
+            else:
+                slots[key] = tmp['resolutions_per_authority'][0]['values'][0]['value']['name']
+    else:
+        slots = {}
+        for key, val in filled_slots.items():
             slots[key] = val.value
-        else:
-            slots[key] = tmp['resolutions_per_authority'][0]['values'][0]['value']['name']
+
     return slots
 
 
