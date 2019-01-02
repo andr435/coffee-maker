@@ -266,6 +266,47 @@ def repeat_intent_handler(handler_input):
     return handler_input.response_builder.response
 
 
+@sb.request_handler(can_handle_func=is_intent_name("InfoIntent"))
+def repeat_intent_handler(handler_input):
+    session_attr = get_session_attr(handler_input, 'info')
+    session_attr.setdefault('user', 'not set')
+    session_attr.setdefault('maker', 'not set')
+    speech_text = f"""
+            Information that I know about you is: your name: {session_attr['user']},
+            and a maker name is: {session_attr['maker']}
+        """
+    reprompt = 'Try to say: I want coffee'
+    card_text = reprompt
+
+    save_last_response(session_attr, speech_text, reprompt, card_text)
+    handler_input.attributes_manager.session_attributes = session_attr
+
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
+    return handler_input.response_builder.response
+
+
+@sb.request_handler(can_handle_func=is_intent_name("DeleteInfoIntent"))
+def repeat_intent_handler(handler_input):
+    session_attr = get_session_attr(handler_input, 'delete_info')
+    session_attr['user'] = ''
+    session_attr['maker'] = ''
+    session = {'user': session_attr['user'], 'maker' :  session_attr['user']}
+    handler_input.attributes_manager.persistent_attributes = session
+    handler_input.attributes_manager.save_persistent_attributes()
+
+    speech_text = f"""
+            Information about you was deleted
+        """
+    reprompt = 'Try to say: I want coffee'
+    card_text = reprompt
+
+    save_last_response(session_attr, speech_text, reprompt, card_text)
+    handler_input.attributes_manager.session_attributes = session_attr
+
+    handler_input.response_builder.speak(speech_text).ask(reprompt).set_card(SimpleCard(skillName, card_text))
+    return handler_input.response_builder.response
+
+
 @sb.request_handler(can_handle_func=is_request_type("SessionEndedRequest"))
 def session_ended_request_handler(handler_input):
     print(f"Reason for ending session: {handler_input.request_envelope.request.reason}")
